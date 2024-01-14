@@ -3,6 +3,7 @@ from pygame.locals import *
 from sys import exit 
 from config import *
 from random import randint
+from utils import *
 
 class Game:
     def __init__(self) -> None:
@@ -50,13 +51,6 @@ class Game:
             elif self.system_state == 2: 
                 self.show_game_over_screen() 
 
-
-
-            # if self.game_over:
-            #     self.system_state = 2
-            #     self.show_game_over_screen() 
-
-
             pygame.display.flip()
 
     def game_run(self): 
@@ -81,12 +75,11 @@ class Game:
 
             if self.player.colliderect(self.target):
                 self.actual_score += 1
-                self.target_x = randint(50, WIDTH - 50)
-                self.target_y = randint(50, HEIGHT - 50)
+                self.target_x, self.target_y = change_target_position()
                 self.speed += 2
             
 
-            if self.player.bottom > HEIGHT or self.player.top < 0 or self.player.left < 0 or self.player.right > WIDTH:
+            if game_over(self.player):
                 self.system_state = SYSTEM_GAME_OVER
                 running = False
                 if self.actual_score > self.best_score: self.best_score = self.actual_score
@@ -115,6 +108,9 @@ class Game:
             if event.type == QUIT:
                 pygame.quit() 
                 exit()
+            if event.type == KEYDOWN:
+                if event.key == K_r:
+                    self.target_x, self.target_y = change_target_position()
 
         if pygame.key.get_pressed()[K_w]:
             self.player_y = self.player_y - self.speed
